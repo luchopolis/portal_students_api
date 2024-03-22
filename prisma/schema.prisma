@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model roles {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users user[]
+}
+
+model user {
+  id         Int        @id @default(autoincrement())
+  email      String     @unique
+  password   String
+  status     Boolean    @default(true) // can access to the platform
+  picture    String     @default("")
+  created_at DateTime   @default(now())
+  updated_at DateTime   @default(now())
+  role_id    Int?
+  roles      roles?     @relation(fields: [role_id], references: [id])
+  teachers   teachers[]
+  students   students[]
+}
+
+model students {
+  id               Int                @id @default(autoincrement())
+  name             String
+  last_name        String
+  code_student     String
+  user_id          Int
+  user             user               @relation(fields: [user_id], references: [id])
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @default(now())
+  activity_student activity_student[]
+  student_course   student_course[]
+}
+
+model teachers {
+  id           Int       @id @default(autoincrement())
+  name         String
+  last_name    String
+  code_teacher String
+  user_id      Int
+  user         user      @relation(fields: [user_id], references: [id])
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
+  courses      courses[]
+}
+
+model courses {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  banner             String
+  code_class         String
+  removed            Boolean              @default(false)
+  teachersId         Int?
+  teachers           teachers?            @relation(fields: [teachersId], references: [id])
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @default(now())
+  activities         activities[]
+  student_course     student_course[]
+  class_publications class_publications[]
+}
+
+enum activity_type {
+  TASK
+  MATERIAL
+}
+
+model activities {
+  id           Int           @id @default(autoincrement())
+  class_id     Int
+  type         activity_type
+  available_to DateTime?
+  score        Int?
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @default(now())
+
+  class              courses              @relation(fields: [class_id], references: [id])
+  activity_content   activity_content[]
+  activity_student   activity_student[]
+  class_publications class_publications[]
+}
+
+model activity_content {
+  id          Int      @id @default(autoincrement())
+  activity_id Int
+  title       String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+
+  activity                  activities                  @relation(fields: [activity_id], references: [id])
+  adm_file_activity_content adm_file_activity_content[]
+}
+
+model adm_files {
+  id                        Int                         @id @default(autoincrement())
+  file_path                 String
+  file_name                 String
+  created_at                DateTime                    @default(now())
+  updated_at                DateTime                    @default(now())
+  adm_file_activity_content adm_file_activity_content[]
+  adm_file_activity_student adm_file_activity_student[]
+}
+
+// save the relation for the files upload part of an activity
+model adm_file_activity_content {
+  id                  Int              @id @default(autoincrement())
+  activity_content_id Int
+  adm_files_id        Int
+  activity_content    activity_content @relation(fields: [activity_content_id], references: [id])
+  adm_files           adm_files        @relation(fields: [adm_files_id], references: [id])
+}
+
+model activity_student {
+  id             Int      @id @default(autoincrement())
+  student_id     Int
+  activity_id    Int
+  score_obtained Int      @default(0)
+  reviewed       Boolean  @default(false)
+  published      Boolean  @default(false) // track if a acativity was published by the student
+  returned       Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
+
+  activity                  activities                  @relation(fields: [activity_id], references: [id])
+  student                   students                    @relation(fields: [student_id], references: [id])
+  adm_file_activity_student adm_file_activity_student[]
+}
+
+model adm_file_activity_student {
+  id                  Int @id @default(autoincrement())
+  activity_student_id Int
+  adm_files_id        Int
+
+  activity_student activity_student @relation(fields: [activity_student_id], references: [id])
+  adm_files        adm_files        @relation(fields: [adm_files_id], references: [id])
+}
+
+model student_course {
+  id         Int @id @default(autoincrement())
+  course_id  Int
+  student_id Int
+
+  course  courses  @relation(fields: [course_id], references: [id])
+  student students @relation(fields: [student_id], references: [id])
+}
+
+enum type_post {
+  NORMAL
+  ACTIVITY
+}
+
+model class_publications {
+  id          Int       @id @default(autoincrement())
+  content     String
+  course_id   Int
+  type        type_post
+  activity_id Int?
+
+  course     courses     @relation(fields: [course_id], references: [id])
+  activity   activities? @relation(fields: [activity_id], references: [id])
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now())
+}

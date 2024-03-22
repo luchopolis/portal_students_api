@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db_class_api:
+    image: postgres
+    restart: always
+    ports:
+      - '5438:5432'
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=CLASS_API
+    volumes:
+      - ./db_p:/var/lib/postgresql/data
