@@ -1,0 +1,21 @@
+# railway.toml
+
+
+[env.portal_students_api]
+
+[yarn.install]
+command = "yarn install"
+
+[yarn.build]
+command = "yarn build"
+
+[yarn.prisma_generate]
+command = "yarn prisma:generate"
+
+[yarn.prisma_migrate]
+command = "yarn prisma:migrate"
+
+[yarn.start_prod]
+command = "yarn start:prod"
+
+database = false
