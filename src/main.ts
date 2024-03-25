@@ -1,13 +1,14 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
+import { ValidationPipe } from '@nestjs/common'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
   app.enableCors({
     credentials: true,
-  });
-  app.setGlobalPrefix('api');
+  })
+  app.setGlobalPrefix('api')
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -17,7 +18,15 @@ async function bootstrap() {
         enableImplicitConversion: true,
       },
     }),
-  );
-  await app.listen(process.env.PORT);
+  )
+  const config = new DocumentBuilder()
+    .setTitle('Portal Api Documentation')
+    .setDescription('Api Documentation')
+    .setVersion('1.0')
+    .build()
+
+  const document = SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup('api', app, document)
+  await app.listen(process.env.PORT)
 }
-bootstrap();
+bootstrap()

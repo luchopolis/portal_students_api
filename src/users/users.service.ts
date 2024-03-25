@@ -1,40 +1,40 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { AuthDto } from "./dto/auth-dto";
-import { PrismaService } from "src/common/providers/db.provider";
+import { Injectable } from '@nestjs/common'
+import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
+import { AuthDto } from '../auth/dto/auth-dto'
+
+import { UsersRepository } from './users.repository'
+import { Role, RoleIds } from 'src/common/types/roles.enum'
 
 @Injectable()
 export class UsersService {
-  constructor(private prismaService: PrismaService) {}
-  create(createUserDto: CreateUserDto) {
-    return "This action adds a new user";
+  constructor(private readonly userRepository: UsersRepository) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  create(_createUserDto: CreateUserDto) {
+    return 'This action adds a new user'
   }
 
   findAll() {
-    return `This action returns all users`;
+    return `This action returns all users`
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return `This action returns a #${id} user`
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(id: number, _updateUserDto: UpdateUserDto) {
+    return `This action updates a #${id} user`
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return `This action removes a #${id} user`
   }
 
-  async findSignIn(auth: AuthDto) {
-    const { email } = auth;
+  async findSignIn(auth: AuthDto, typeRole: Role) {
+    const { email } = auth
 
-    const userData = await this.prismaService.user.findFirst({
+    const userData = await this.userRepository.findFirst({
       include: {
         roles: {
           select: {
@@ -45,8 +45,11 @@ export class UsersService {
       },
       where: {
         email,
+        roles: {
+          id: RoleIds[typeRole],
+        },
       },
-    });
-    return userData;
+    })
+    return userData
   }
 }
