@@ -5,6 +5,7 @@ import { AuthDto } from '../auth/dto/auth-dto'
 
 import { UsersRepository } from './users.repository'
 import { Role, RoleIds } from 'src/common/types/roles.enum'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
@@ -18,8 +19,11 @@ export class UsersService {
     return `This action returns all users`
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`
+  findOne(id: number, selectFields?: Prisma.userSelect) {
+    return this.userRepository.findFirst({
+      select: selectFields,
+      where: { id: Number(id) },
+    })
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

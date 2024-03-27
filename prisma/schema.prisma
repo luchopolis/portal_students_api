@@ -25,6 +25,7 @@ model user {
   roles      roles?     @relation(fields: [role_id], references: [id])
   teachers   teachers[]
   students   students[]
+  courses    courses[]
 }
 
 model students {
@@ -41,25 +42,24 @@ model students {
 }
 
 model teachers {
-  id           Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   name         String
   last_name    String
   code_teacher String
   user_id      Int
-  user         user      @relation(fields: [user_id], references: [id])
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @default(now())
-  courses      courses[]
+  user         user     @relation(fields: [user_id], references: [id])
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
 }
 
 model courses {
   id                 Int                  @id @default(autoincrement())
   name               String
   banner             String
-  code_class         String
-  removed            Boolean              @default(false)
+  code_class         String               @unique()
+  removed            Boolean?             @default(false)
   teachersId         Int?
-  teachers           teachers?            @relation(fields: [teachersId], references: [id])
+  teachers           user?                @relation(fields: [teachersId], references: [id])
   created_at         DateTime             @default(now())
   updated_at         DateTime             @default(now())
   activities         activities[]
