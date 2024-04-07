@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 
 import { PrismaService } from 'src/common/providers/db.provider'
 import { Course } from './entities/course.entity'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class CourseRepository {
@@ -22,5 +23,16 @@ export class CourseRepository {
       },
     })
     return entityCreated
+  }
+
+  async findAll(params: {
+    pagination: Prisma.coursesFindManyArgs
+    where: Prisma.coursesWhereInput
+  }) {
+    return await this.prismaService.courses.findMany({
+      where: params.where,
+      take: params.pagination.take,
+      skip: params.pagination.skip ?? 0,
+    })
   }
 }

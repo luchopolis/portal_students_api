@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Request,
+  Query,
 } from '@nestjs/common'
 import { CourseService } from './course.service'
 import { CreateCourseDto } from './dto/create-course.dto'
@@ -15,13 +16,17 @@ import { Auth } from 'src/auth/decorators/auth.decorator'
 import { Role } from 'src/common/types/roles.enum'
 
 import { ITokenUser } from 'src/common/types/interfaces'
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Course } from './entities/course.entity'
 
+@ApiTags('Course')
 @Controller('course')
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
   @Auth(Role.Teacher)
   @Post()
+  @ApiResponse({ status: 200, description: 'New Course', type: Course })
   create(@Request() req, @Body() createCourseDto: CreateCourseDto) {
     const user: ITokenUser = req.user
 
@@ -31,9 +36,21 @@ export class CourseController {
     })
   }
 
+  @Auth(Role.Teacher)
   @Get()
-  findAll() {
-    return this.courseService.findAll()
+  @ApiResponse({
+    status: 200,
+    description: 'New Course',
+    type: Course,
+    isArray: true,
+  })
+  findAll(
+    @Request() req,
+    @Query('take') take: number,
+    @Query('skip') skip?: number,
+  ) {
+    const userId: ITokenUser = req.user
+    return this.courseService.findAll(userId.sub, { skip, take })
   }
 
   @Get(':id')
