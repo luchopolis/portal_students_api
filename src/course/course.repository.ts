@@ -35,4 +35,14 @@ export class CourseRepository {
       skip: params.pagination.skip ?? 0,
     })
   }
+
+  async update(params: {
+    data: Prisma.coursesUpdateInput
+    where: Prisma.coursesWhereUniqueInput
+  }) {
+    return await this.prismaService.courses.update({
+      data: params.data,
+      where: params.where,
+    })
+  }
 }

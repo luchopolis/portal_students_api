@@ -40,8 +40,13 @@ export class CourseService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`
+  async update(id: number, updateCourseDto: UpdateCourseDto) {
+    return await this.courseRepository.update({
+      data: updateCourseDto,
+      where: {
+        id,
+      },
+    })
   }
 
   remove(id: number) {

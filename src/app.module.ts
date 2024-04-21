@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { JwtModule } from '@nestjs/jwt'
 import { CourseModule } from './course/course.module'
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CourseModule } from './course/course.module'
     AuthModule,
     UsersModule,
     CourseModule,
+    StudentModule,
   ],
   controllers: [],
   providers: [],

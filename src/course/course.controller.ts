@@ -59,6 +59,11 @@ export class CourseController {
   }
 
   @Patch(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Update Course',
+    type: Course,
+  })
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
     return this.courseService.update(+id, updateCourseDto)
   }
