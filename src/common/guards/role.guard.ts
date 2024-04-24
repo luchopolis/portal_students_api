@@ -24,6 +24,7 @@ export class RoleGuard implements CanActivate {
       picture: number
       role: { id: number; name: string }
     } = user
+    console.log(user)
 
     return requiredRoles.some((role: string) => userToken.role.name === role)
   }

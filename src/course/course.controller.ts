@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   Query,
+  UseGuards,
 } from '@nestjs/common'
 import { CourseService } from './course.service'
 import { CreateCourseDto } from './dto/create-course.dto'
@@ -18,6 +19,7 @@ import { Role } from 'src/common/types/roles.enum'
 import { ITokenUser } from 'src/common/types/interfaces'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Course } from './entities/course.entity'
+import { OwnerCourseGuard } from './guards/owner.guard'
 
 @ApiTags('Course')
 @Controller('course')
@@ -58,6 +60,8 @@ export class CourseController {
     return this.courseService.findOne(+id)
   }
 
+  @UseGuards(OwnerCourseGuard)
+  @Auth(Role.Teacher)
   @Patch(':id')
   @ApiResponse({
     status: 200,
