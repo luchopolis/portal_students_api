@@ -17,7 +17,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator'
 import { Role } from 'src/common/types/roles.enum'
 
 import { ITokenUser } from 'src/common/types/interfaces'
-import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger'
 import { Course } from './entities/course.entity'
 import { OwnerCourseGuard } from './guards/owner.guard'
 
@@ -43,16 +43,28 @@ export class CourseController {
   @ApiResponse({
     status: 200,
     description: 'New Course',
-    type: Course,
-    isArray: true,
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            $ref: getSchemaPath(Course),
+          },
+        },
+      },
+    },
   })
-  findAll(
+  async findAll(
     @Request() req,
     @Query('take') take: number,
     @Query('skip') skip?: number,
   ) {
     const userId: ITokenUser = req.user
-    return this.courseService.findAll(userId.sub, { skip, take })
+    const result = await this.courseService.findAll(userId.sub, { skip, take })
+    return {
+      data: result,
+    }
   }
 
   @Get(':id')
@@ -69,7 +81,7 @@ export class CourseController {
     type: Course,
   })
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
-    return this.courseService.update(+id, updateCourseDto)
+    return { data: this.courseService.update(+id, updateCourseDto) }
   }
 
   @Delete(':id')
