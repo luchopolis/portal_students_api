@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { CreateCourseDto } from './dto/create-course.dto'
 import { UpdateCourseDto } from './dto/update-course.dto'
 import { CourseRepository } from './course.repository'
@@ -35,8 +35,26 @@ export class CourseService {
     return result
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`
+  async findOne(paramsFindOne: Prisma.coursesFindFirstArgs) {
+    try {
+      const courseDetail = await this.courseRepository.findOne({
+        where: paramsFindOne.where,
+        include: paramsFindOne.include,
+        select: {
+          id: true,
+          banner: true,
+          code_class: true,
+        },
+      })
+      return courseDetail
+    } catch (error: any) {
+      if (typeof error === 'object') {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Course Not Found')
+        }
+      }
+      throw new Error(error)
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

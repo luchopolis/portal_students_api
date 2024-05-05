@@ -67,9 +67,27 @@ export class CourseController {
     }
   }
 
+  @UseGuards(OwnerCourseGuard)
+  @Auth(Role.Teacher)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.courseService.findOne(+id)
+  @ApiResponse({
+    status: 200,
+    description: 'Course Teacher Details',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            $ref: getSchemaPath(Course),
+          },
+        },
+      },
+    },
+  })
+  async courseTeacherDetail(@Param('id') id: string) {
+    const result = await this.courseService.findOne({ where: { id: +id } })
+    return result
   }
 
   @UseGuards(OwnerCourseGuard)

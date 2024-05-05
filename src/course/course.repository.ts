@@ -25,6 +25,26 @@ export class CourseRepository {
     return entityCreated
   }
 
+  async findOne(params: {
+    where: Prisma.coursesWhereInput
+    include?: Prisma.coursesInclude
+    select?: Prisma.coursesSelect
+  }) {
+    const findCourse: Prisma.coursesFindFirstArgs = {
+      where: params.where,
+    }
+
+    if (params.include) {
+      findCourse.include = params.include
+    }
+
+    if (params.select) {
+      findCourse.select = params.select
+    }
+
+    return await this.prismaService.courses.findFirstOrThrow(findCourse)
+  }
+
   async findAll(params: {
     pagination: Prisma.coursesFindManyArgs
     where: Prisma.coursesWhereInput
