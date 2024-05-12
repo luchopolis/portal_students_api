@@ -57,6 +57,26 @@ export class CourseService {
     }
   }
 
+  async studentCourse(
+    studentId: number,
+    paramsFilter?: Prisma.coursesFindManyArgs,
+  ) {
+    const result = await this.courseRepository.findAll({
+      pagination: paramsFilter,
+      where: {
+        student_course: {
+          some: {
+            student: {
+              user_id: studentId,
+            },
+          },
+        },
+      },
+    })
+
+    return result
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async update(id: number, updateCourseDto: UpdateCourseDto) {
     return await this.courseRepository.update({

@@ -67,6 +67,36 @@ export class CourseController {
     }
   }
 
+  @Get('students-enrolled')
+  @Auth(Role.Student)
+  @ApiResponse({
+    status: 200,
+    description: 'New Course',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            $ref: getSchemaPath(Course),
+          },
+        },
+      },
+    },
+  })
+  async studentsCourses(
+    @Request() req,
+    @Query('take') take: number,
+    @Query('skip') skip?: number,
+  ) {
+    const userId: ITokenUser = req.user
+    const result = await this.courseService.studentCourse(userId.sub, {
+      skip,
+      take,
+    })
+    return { data: result }
+  }
+
   @UseGuards(OwnerCourseGuard)
   @Auth(Role.Teacher)
   @Get(':id')

@@ -24,4 +24,10 @@ export class AuthController {
   async testing(@Request() req) {
     return req.user
   }
+
+  @Post('login-student')
+  async signInStudent(@Body() data: AuthDto) {
+    const { access_token } = await this.authService.signIn(data, Role.Student)
+    return { jwt: access_token }
+  }
 }
