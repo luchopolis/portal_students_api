@@ -8,7 +8,7 @@ async function bootstrap() {
   app.enableCors({
     credentials: true,
   })
-  app.setGlobalPrefix('api')
+  app.setGlobalPrefix('docs')
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
