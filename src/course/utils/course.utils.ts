@@ -16,4 +16,12 @@ export class CourseUtils {
     }
     return code
   }
+
+  public generateBase64Data(params: { toEncode: string }) {
+    return btoa(params.toEncode)
+  }
+
+  public decodeBase64(params: { toDecode: string }) {
+    return atob(params.toDecode)
+  }
 }

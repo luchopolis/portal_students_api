@@ -9,6 +9,8 @@ import {
   Request,
   Query,
   UseGuards,
+  ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common'
 import { CourseService } from './course.service'
 import { CreateCourseDto } from './dto/create-course.dto'
@@ -20,11 +22,17 @@ import { ITokenUser } from 'src/common/types/interfaces'
 import { ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger'
 import { Course } from './entities/course.entity'
 import { OwnerCourseGuard } from './guards/owner.guard'
+import { EmailNotificationService } from 'src/common/email/service/EmailService'
+import { LocalProviderEmail } from 'src/common/email/providers/LocalProviderEmail'
 
 @ApiTags('Course')
 @Controller('course')
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly emailService: EmailNotificationService,
+    private readonly localProviderEmail: LocalProviderEmail,
+  ) {}
 
   @Auth(Role.Teacher)
   @Post()
@@ -62,6 +70,8 @@ export class CourseController {
   ) {
     const userId: ITokenUser = req.user
     const result = await this.courseService.findAll(userId.sub, { skip, take })
+    this.emailService.setStrategy(this.localProviderEmail)
+    this.emailService.notify()
     return {
       data: result,
     }
@@ -135,5 +145,24 @@ export class CourseController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.courseService.remove(+id)
+  }
+
+  @Auth(Role.Student)
+  @Post('join')
+  async joinCourse(@Request() req, @Body() data: { code: string }) {
+    const { sub: userId }: ITokenUser = req.user
+    const { code } = data
+
+    const checkStudentInCourse = await this.courseService.studentAlreadyIn(
+      code,
+      userId,
+    )
+
+    if (checkStudentInCourse) {
+      throw new BadRequestException('You Are Already in this course')
+    }
+
+    await this.courseService.joinUserInCourse(code, userId)
+    return { message: 'Success' }
   }
 }

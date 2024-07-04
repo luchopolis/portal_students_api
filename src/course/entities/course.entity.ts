@@ -19,6 +19,8 @@ export class Course implements courses {
   @ApiProperty()
   teachersId: number
 
+  inviteIdentifier: string
+
   created_at: Date
 
   updated_at: Date

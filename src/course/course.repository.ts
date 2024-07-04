@@ -19,7 +19,7 @@ export class CourseRepository {
         name: data.name,
         banner: data.banner,
         code_class: data.code_class,
-        teachersId: 1,
+        teachersId: data.teachersId,
       },
     })
     return entityCreated
@@ -64,5 +64,14 @@ export class CourseRepository {
       data: params.data,
       where: params.where,
     })
+  }
+
+  async studentCourseCreate(
+    create: Prisma.XOR<
+      Prisma.student_courseCreateInput,
+      Prisma.student_courseUncheckedCreateInput
+    >,
+  ) {
+    return await this.prismaService.student_course.create({ data: create })
   }
 }

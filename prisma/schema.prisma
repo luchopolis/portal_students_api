@@ -62,6 +62,7 @@ model courses {
   teachers           user?                @relation(fields: [teachersId], references: [id])
   created_at         DateTime             @default(now())
   updated_at         DateTime             @default(now())
+  inviteIdentifier   String               @default("")
   activities         activities[]
   student_course     student_course[]
   class_publications class_publications[]
