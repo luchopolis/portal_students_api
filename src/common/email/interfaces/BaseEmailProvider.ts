@@ -1,3 +1,3 @@
 export abstract class IBaseEmailProvider {
-  abstract sendMail(): void
+  abstract sendMail(params: { to: string; message: string }): Promise<void>
 }

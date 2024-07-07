@@ -31,7 +31,7 @@ export class CourseController {
   constructor(
     private readonly courseService: CourseService,
     private readonly emailService: EmailNotificationService,
-    private readonly localProviderEmail: LocalProviderEmail,
+    // private readonly localProviderEmail: LocalProviderEmail,
   ) {}
 
   @Auth(Role.Teacher)
@@ -70,8 +70,12 @@ export class CourseController {
   ) {
     const userId: ITokenUser = req.user
     const result = await this.courseService.findAll(userId.sub, { skip, take })
-    this.emailService.setStrategy(this.localProviderEmail)
-    this.emailService.notify()
+    // this.emailService.setStrategy(this.localProviderEmail)
+    await this.emailService.notify({
+      to: 'lacgdev@gmail.com',
+      message: 'Hi Luis',
+    })
+
     return {
       data: result,
     }

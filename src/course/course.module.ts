@@ -6,6 +6,7 @@ import { CourseRepository } from './course.repository'
 import { ConfigModule } from '@nestjs/config'
 import { CourseUtils } from './utils/course.utils'
 import { StudentModule } from 'src/student/student.module'
+import { HttpModule } from '@nestjs/axios'
 
 @Module({
   imports: [ConfigModule, CommonModule, StudentModule],

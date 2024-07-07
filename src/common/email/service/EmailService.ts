@@ -9,7 +9,7 @@ export class EmailNotificationService {
   setStrategy(provider: IBaseEmailProvider) {
     this.provider = provider
   }
-  notify() {
-    this.provider.sendMail()
+  async notify(params: { to: string; message: string }) {
+    await this.provider.sendMail(params)
   }
 }
