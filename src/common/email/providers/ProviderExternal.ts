@@ -8,6 +8,7 @@ export class ProviderExternal implements IBaseEmailProvider {
 
   async sendMail(params: { to: string; message: string }): Promise<void> {
     try {
+      // TODO: Change with an env variable
       await this.httpService.axiosRef.post(
         'http://127.0.0.1:3003/api/send-mail',
         {
