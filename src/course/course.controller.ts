@@ -190,11 +190,19 @@ export class CourseController {
       userId,
     )
 
-    if (checkStudentInCourse) {
+    if (checkStudentInCourse && checkStudentInCourse.active) {
       throw new BadRequestException('You Are Already in this course')
     }
 
-    await this.courseService.joinUserInCourse(code, userId)
+    if (checkStudentInCourse && !checkStudentInCourse.active) {
+      await this.courseService.reJoinStudent({
+        code,
+        userId,
+      })
+    } else {
+      await this.courseService.joinUserInCourse(code, userId)
+    }
+
     return { message: 'Success' }
   }
 

@@ -134,6 +134,22 @@ export class CourseService {
     })
   }
 
+  async reJoinStudent(params: { code: string; userId: number }) {
+    await this.courseRepository.studentsCourseUpdate({
+      where: {
+        course: {
+          code_class: params.code,
+        },
+        student: {
+          user_id: params.userId,
+        },
+      },
+      data: {
+        active: true,
+      },
+    })
+  }
+
   async studentAlreadyIn(code: string, userId: number) {
     const findInCourse = await this.studentsRepository.studentCourseFindOne({
       where: {

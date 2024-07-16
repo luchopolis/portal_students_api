@@ -75,6 +75,16 @@ export class CourseRepository {
     return await this.prismaService.student_course.create({ data: create })
   }
 
+  async studentsCourseUpdate(params: {
+    where: Prisma.student_courseWhereInput
+    data: Prisma.student_courseUpdateInput
+  }) {
+    await this.prismaService.student_course.updateMany({
+      data: params.data,
+      where: params.where,
+    })
+  }
+
   async studentsInCourse(params: { courseId: number }) {
     const response = await this.prismaService.student_course.findMany({
       where: {
