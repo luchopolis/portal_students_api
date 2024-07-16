@@ -5,6 +5,8 @@ import { CourseRepository } from './course.repository'
 import { CourseUtils } from './utils/course.utils'
 import { Prisma } from '@prisma/client'
 import { StudentRepository } from 'src/student/student.repository'
+import { ICourseParticipantsResponse } from './interfaces/response/list-participants'
+import { TeacherRepository } from 'src/teachers/teacher.repository'
 
 @Injectable()
 export class CourseService {
@@ -12,6 +14,7 @@ export class CourseService {
     private readonly courseRepository: CourseRepository,
     private readonly courseUtils: CourseUtils,
     private readonly studentsRepository: StudentRepository,
+    private readonly teacherRepository: TeacherRepository,
   ) {}
   async create(params: { dataCourseDto: CreateCourseDto; teacherId: number }) {
     const { dataCourseDto, teacherId } = params
@@ -61,6 +64,7 @@ export class CourseService {
         include: paramsFindOne.include,
         select: {
           id: true,
+          name: true,
           banner: true,
           code_class: true,
         },
@@ -143,5 +147,63 @@ export class CourseService {
     })
 
     return findInCourse
+  }
+
+  async membersInCourse(params: { courseId: number }) {
+    const participants: Partial<ICourseParticipantsResponse> = {}
+
+    const courseInfo = await this.courseRepository.findOne({
+      where: {
+        id: params.courseId,
+      },
+    })
+
+    const students = await this.courseRepository.studentsInCourse({
+      courseId: params.courseId,
+    })
+
+    const teacherInfo: {
+      id: number
+      name: string
+      last_name: string
+      code_teacher: string
+      user_id: number
+      created_at: Date
+      updated_at: Date
+      user?: {
+        picture: string
+      }
+    } = await this.teacherRepository.findFirst({
+      where: {
+        user_id: courseInfo.teachersId,
+      },
+      include: {
+        user: {
+          select: {
+            picture: true,
+          },
+        },
+      },
+    })
+
+    participants.teachers = [
+      {
+        id: teacherInfo.id,
+        picture: teacherInfo.user.picture,
+        name: teacherInfo.name,
+        last_name: teacherInfo.last_name,
+      },
+    ]
+
+    participants.students = students.map((student) => {
+      return {
+        id: student.student.id,
+        name: student.student.name,
+        last_name: student.student.last_name,
+        picture: student.student.user.picture,
+      }
+    })
+
+    return participants
   }
 }

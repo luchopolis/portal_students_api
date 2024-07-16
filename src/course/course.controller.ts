@@ -11,6 +11,7 @@ import {
   UseGuards,
   ForbiddenException,
   BadRequestException,
+  ParseIntPipe,
 } from '@nestjs/common'
 import { CourseService } from './course.service'
 import { CreateCourseDto } from './dto/create-course.dto'
@@ -24,6 +25,9 @@ import { Course } from './entities/course.entity'
 import { OwnerCourseGuard } from './guards/owner.guard'
 import { EmailNotificationService } from 'src/common/email/service/EmailService'
 import { LocalProviderEmail } from 'src/common/email/providers/LocalProviderEmail'
+import { StudentEnrolledGuard } from './guards/enrolled.guard'
+import { schemaCourseParticipants } from './schemas/course-participants'
+import { MemberOfCourseGuard } from './guards/isMember.guard'
 
 @ApiTags('Course')
 @Controller('course')
@@ -71,16 +75,17 @@ export class CourseController {
     const userId: ITokenUser = req.user
     const result = await this.courseService.findAll(userId.sub, { skip, take })
     // this.emailService.setStrategy(this.localProviderEmail)
-    await this.emailService.notify({
-      to: 'lacgdev@gmail.com',
-      message: 'Hi Luis',
-    })
+    // await this.emailService.notify({
+    //   to: 'lacgdev@gmail.com',
+    //   message: 'Hi Luis',
+    // })
 
     return {
       data: result,
     }
   }
 
+  // list the student's courses
   @Get('students-enrolled')
   @Auth(Role.Student)
   @ApiResponse({
@@ -134,6 +139,29 @@ export class CourseController {
     return result
   }
 
+  @UseGuards(StudentEnrolledGuard)
+  @Auth(Role.Student)
+  @Get('/:id/student-detail')
+  @ApiResponse({
+    status: 200,
+    description: 'Course Student Details',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            $ref: getSchemaPath(Course),
+          },
+        },
+      },
+    },
+  })
+  async courseStudentDetail(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.courseService.findOne({ where: { id: id } })
+    return { data: result }
+  }
+
   @UseGuards(OwnerCourseGuard)
   @Auth(Role.Teacher)
   @Patch(':id')
@@ -168,5 +196,23 @@ export class CourseController {
 
     await this.courseService.joinUserInCourse(code, userId)
     return { message: 'Success' }
+  }
+
+  @UseGuards(MemberOfCourseGuard)
+  @Auth(Role.Student, Role.Teacher)
+  @Get('/:courseId/participants')
+  @ApiResponse({
+    status: 200,
+    description: 'Update Course',
+    schema: schemaCourseParticipants,
+  })
+  async participantsInCourse(
+    @Param('courseId', ParseIntPipe) courseId: number,
+  ) {
+    const participants = await this.courseService.membersInCourse({
+      courseId: courseId,
+    })
+
+    return { data: participants }
   }
 }

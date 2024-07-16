@@ -145,12 +145,12 @@ model adm_file_activity_student {
 }
 
 model student_course {
-  id         Int @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   course_id  Int
   student_id Int
-
-  course  courses  @relation(fields: [course_id], references: [id])
-  student students @relation(fields: [student_id], references: [id])
+  active     Boolean  @default(true) // help to control if an user is still part of the course or rejoin
+  course     courses  @relation(fields: [course_id], references: [id])
+  student    students @relation(fields: [student_id], references: [id])
 }
 
 enum type_post {

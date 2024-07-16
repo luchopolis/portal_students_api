@@ -74,4 +74,31 @@ export class CourseRepository {
   ) {
     return await this.prismaService.student_course.create({ data: create })
   }
+
+  async studentsInCourse(params: { courseId: number }) {
+    const response = await this.prismaService.student_course.findMany({
+      where: {
+        course_id: Number(params.courseId),
+        active: true,
+      },
+
+      select: {
+        student: {
+          select: {
+            id: true,
+            name: true,
+            last_name: true,
+            user: {
+              select: {
+                id: true,
+                picture: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    return response
+  }
 }

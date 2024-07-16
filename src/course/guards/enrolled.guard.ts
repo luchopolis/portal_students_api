@@ -26,7 +26,9 @@ export class StudentEnrolledGuard implements CanActivate {
       {
         where: {
           course_id: Number(params.id),
-          student_id: Number(userToken.sub),
+          student: {
+            user_id: Number(userToken.sub),
+          },
         },
       },
     )
