@@ -16,8 +16,20 @@ export class TeachersService {
     return result
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} teacher`
+  async findOne(id: number) {
+    const result = await this.prismaService.teachers.findFirst({
+      select: {
+        id: true,
+        name: true,
+        last_name: true,
+        code_teacher: true,
+      },
+      where: {
+        id,
+      },
+    })
+
+    return result
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

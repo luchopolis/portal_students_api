@@ -1,0 +1,14 @@
+{
+  "moduleFileExtensions": ["js", "ts", "json"],
+
+  "testEnvironment": "node",
+  "moduleNameMapper": {
+    "src/(.*)": "<rootDir>/src/$1",
+    "src/common/(.*)": "<rootDir>/src/common/$1",
+    "src/common/providers/(.*)": "<rootDir>/src/common/providers/$1",
+    "src/teachers/(.*)": "<rootDir>/src/teachers/$1"
+  },
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  }
+}

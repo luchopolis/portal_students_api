@@ -7,7 +7,10 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { JwtModule } from '@nestjs/jwt'
 import { CourseModule } from './course/course.module'
-import { StudentModule } from './student/student.module';
+import { StudentModule } from './student/student.module'
+
+import { globalModules } from './config/global-modules'
+import { OtpModule } from './otp/otp.module';
 
 @Module({
   imports: [
@@ -31,6 +34,8 @@ import { StudentModule } from './student/student.module';
     UsersModule,
     CourseModule,
     StudentModule,
+    ...globalModules,
+    OtpModule,
   ],
   controllers: [],
   providers: [],
