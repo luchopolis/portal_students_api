@@ -1,9 +1,9 @@
 export const MockTeachers = {
   findOne: {
     result: {
-      id: 10,
-      name: 'Luis',
-      last_name: 'Caballero',
+      id: 1,
+      name: 'John',
+      last_name: 'Doe',
       code_teacher: 'A1234',
     },
   },

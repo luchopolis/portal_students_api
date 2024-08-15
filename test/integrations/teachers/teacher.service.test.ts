@@ -6,6 +6,7 @@ import { CommonModule } from 'src/common/common.module'
 import { MockTeachers, prismMockTeacher } from './mock-teacher'
 import { PrismaService } from 'src/common/providers/db.provider'
 
+// Usando Mocks, Unit Testing, esto permite que asignemos la data nosotros
 describe('Teacher Service Int', () => {
   //let prisma: PrismaService;
 
